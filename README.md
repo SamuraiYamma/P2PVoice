@@ -1,4 +1,2 @@
-# voiceGo
-P2P Voice server using GoLang
-
-Testing line to see if webhook works
+# P2PVoice
+P2P Voice server using Java
