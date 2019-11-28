@@ -27,7 +27,7 @@ public class P2PVoiceClient implements ActionListener {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					P2PVoiceClient window = new P2PVoiceClient();
+					P2PVoiceClient window = new ();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,7 +58,7 @@ public class P2PVoiceClient implements ActionListener {
     }
 	
 	
-	void sendMessage(String send, OutputStream out) throws Exception {
+	void sendMessage(Packet, OutputStream out) throws Exception {
 		byte[] msg = send.getBytes();
 		byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();		
 		out.write(msgLen, 0, 4);
@@ -73,6 +73,9 @@ public class P2PVoiceClient implements ActionListener {
 			String receiverIP = String.valueOf(this.receiverIP.getText());
 			int port = Integer.parseInt(this.port.getText());
 			this.connect("127.0.0.1", (locSoc + 1));
+			//Send the server the sender's IP, port number, and alias, and the receiver's IP and port number
+			//TODO: Find a way for the client's IP and port # to be collected without a prompt
+			this.sendMessage(/*senderIP*/ + "/" + /*senderPort*/ + "/" + /*alias*/ + "/" + /*ipField*/ + "/" + /*portField*/, this.clientOut());
 			try{
 				Socket newSock = new Socket (receiverIP, port);
 				BufferedInputStream InP2P = new BufferedInputStream(newSock.getInputStream());
