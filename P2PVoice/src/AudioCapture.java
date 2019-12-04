@@ -1,15 +1,22 @@
 import javax.sound.sampled.*;
-import java.io.ByteArrayOutputStream;
-import java.lang.annotation.Target;
+import java.io.*;
+import java.net.*;
+import java.nio.ByteBuffer;
 
 public class AudioCapture {
     private TargetDataLine mic;
     private DataLine.Info info;
     private AudioFormat format;
-    private ByteArrayOutputStream out;
-    private SourceDataLine speakers;
+    private Socket socket;
+    private OutputStream out;
 
-    public AudioCapture(/* TODO: uncomment //ByteArrayOutputStream out */) {
+    public AudioCapture(Socket socket) {
+        this.socket = socket;
+        try {
+            this.out = socket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         format = new AudioFormat(8000.0f, 16, 1, true, true);
         info = new DataLine.Info(TargetDataLine.class, format);
 
@@ -17,10 +24,6 @@ public class AudioCapture {
             mic = (TargetDataLine) AudioSystem.getLine(info);
             mic.open(format);
 
-            /* TODO: This block is for testing */
-            DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-            speakers = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-            speakers.open(format);
 
         } catch(LineUnavailableException e) {
             e.printStackTrace();
@@ -29,27 +32,32 @@ public class AudioCapture {
     }
 
     public void readAudio() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         int bRead;
         byte[] data = new byte[mic.getBufferSize()/5];
-
         mic.start();
-
-        /* TODO: This block is for testing */
-        speakers.start();
 
         while(true) {
             bRead = mic.read(data, 0, data.length);
-
-            out.write(data, 0, bRead);
-            speakers.write(data, 0, bRead);
+            try {
+                this.sendAudio(data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        AudioCapture ac = new AudioCapture();
+    private void sendAudio(byte[] msg) throws Exception {
+        byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
+        this.out.write(msgLen, 0, 4);
 
-        ac.readAudio();
+        //Next write the message.
+        this.out.write(msg, 0, msg.length);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+
+
+
     }
 }
