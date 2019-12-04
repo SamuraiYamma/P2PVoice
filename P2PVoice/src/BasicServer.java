@@ -72,7 +72,7 @@ public class BasicServer {
 
         @Override
         public void run() {
-            String peerInfo = local.getInetAddress().toString() + ":" + local.getPort();
+            String peerInfo = local.getInetAddress().toString().substring(1) + ":" + local.getPort();
             String response = "";
             try {
                 sendMessage(peerInfo.getBytes());

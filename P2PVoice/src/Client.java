@@ -72,7 +72,6 @@ public class Client {
 
         peerIP = info[0];
         peerPort = Integer.parseInt(info[1]);
-
         //TODO: Ask user whether they want to accept or decline call
 
         //accept();
