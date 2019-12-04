@@ -69,8 +69,7 @@ public class BasicServer {
             String request;
             try {
                 request = this.getMessage();
-                byte[] fbytes = Files.readAllBytes(Paths.get(request));
-                this.sendMessage(fbytes);
+                System.out.println(request);
                 this.socket.close();
 
                 //TODO: This line is for testing only
@@ -100,7 +99,9 @@ public class BasicServer {
         private String getMessage() throws Exception {
             byte[] msgLength = new byte[4];
             this.serverIn.read(msgLength, 0, 4);
+
             int len = ByteBuffer.wrap(msgLength).getInt();
+            System.out.println(len + "");
             byte[] msg = new byte[len];
             this.serverIn.read(msg, 0, len);
             return new String(msg);

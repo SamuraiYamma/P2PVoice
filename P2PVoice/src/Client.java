@@ -49,8 +49,8 @@ public class Client {
             //TODO: we eventually want localhost here to be sysIP
             socket = new Socket("localhost", port);
             clientIn = socket.getInputStream();
-            clientOut = new BufferedOutputStream(socket.getOutputStream());
-
+            //clientOut = new BufferedOutputStream(socket.getOutputStream());
+            clientOut = socket.getOutputStream();
             sendMyInfo();
 
 
