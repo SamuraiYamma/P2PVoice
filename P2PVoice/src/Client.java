@@ -19,6 +19,10 @@ public class Client {
     private OutputStream clientOut;
     private Socket socket;
 
+    //connection info
+    private String peerIP;
+    private int peerPort;
+
     /**
      * constructor
      * inits a lot of local variables that the gui may ask for
@@ -63,9 +67,68 @@ public class Client {
 
         mainFrame.setMode(Status.ONLINE);
 
-        while(true) {
+        waitForConnect();
+    }
+
+    /**
+     *
+     * @param message
+     */
+    public void receive(String message){
+        mainFrame.setMode(Status.RECEIVING);
+        String[] info = message.split(":");
+
+        peerIP = info[0];
+        peerPort = Integer.parseInt(info[1]);
+    }
+
+    /**
+     * accept an incoming connect, begin next phase
+     */
+    public void accept(){
+        //TODO: Remove these lines when in production
+        System.out.println("Accepting call...");
+
+        mainFrame.setMode(Status.CONNECTED);
+        call(peerIP, peerPort);
+
+
+    }
+
+    /**
+     * deny an incoming connection. send deny response
+     * reset system to online
+     */
+    public void deny(){
+        //TODO: Remove these lines when in production
+        System.out.println("Denying call...");
+        mainFrame.setMode(Status.ONLINE);
+        waitForConnect();
+    }
+
+    public String getPeerIP(){
+        return peerIP;
+    }
+
+    /**
+     * call another server with these credentials
+     * @param peerIP the ip to connect to
+     * @param peerPort the port on that ip to connect to
+     */
+    private void call(String peerIP, int peerPort){
+        //TODO: Add actual call functionality
+    }
+
+    /**
+     * waits for incoming connections
+     */
+    private void waitForConnect(){
+        //while we are in online mode, wait for connection
+        while(mainFrame.getMode().equals(Status.ONLINE)) {
             try {
                 String connect = getMessage(clientIn);
+                receive(connect); //TODO: sketchy as hell
+
             } catch(Exception e){};
         }
     }
@@ -175,7 +238,7 @@ public class Client {
      * Sends my info in the output stream
      */
     private void sendMyInfo(){
-        String info = String.format("%s,%d",sysIP, port);
+        String info = String.format("%s:%d",sysIP, port);
         try {
             sendMessage(info, clientOut);
         } catch (Exception e) {
