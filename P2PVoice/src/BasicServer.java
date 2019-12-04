@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
  * TODO: Convert these stubs into an actual server that works
  */
 public class BasicServer {
+
     public void start() {
         int port = 44444;
         //start listening for incoming connections
@@ -36,7 +37,7 @@ public class BasicServer {
             local = listener.accept();
             while (true){
                 //assign incoming connection to new thread
-                threadPool.execute(new RemoteHandler(listener.accept(), local));
+                threadPool.execute(new RemoteHandler(listener.accept(), local, port));
 
             }
         } catch (IOException e) {
@@ -54,16 +55,17 @@ public class BasicServer {
         private Socket remote;
         private Socket local;
         private AudioPlayback pb;
+        private int port;
 
         // These streams are for communicating with the local client.
         private OutputStream serverOut;
         private InputStream serverIn;
 
 
-        RemoteHandler(Socket remote, Socket local) throws Exception {
+        RemoteHandler(Socket remote, Socket local, int port) throws Exception {
             this.remote = remote;
             this.local = local;
-
+            this.port = port;
             serverOut = local.getOutputStream();
             serverIn = local.getInputStream();
 
@@ -72,7 +74,7 @@ public class BasicServer {
 
         @Override
         public void run() {
-            String peerInfo = local.getInetAddress().toString().substring(1) + ":" + local.getPort();
+            String peerInfo = local.getInetAddress().toString().substring(1) + ":" + port;
             String response = "";
             try {
                 sendMessage(peerInfo.getBytes());
