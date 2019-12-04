@@ -41,7 +41,6 @@ public class AudioPlayback {
      * Primary function, reads audio from socket
      */
     public void playAudio() {
-        int bRead;
         byte[] data = new byte[speakers.getBufferSize()/5];
 
         speakers.start();
@@ -50,7 +49,7 @@ public class AudioPlayback {
         // or push to talk disengaged. Not sure which applies here yet
         while(true) {
             try {
-                //bRead = in.read(data, 0, data.length);
+
                 data = getAudio();
             } catch (IOException e) {
                 e.printStackTrace();
