@@ -53,9 +53,7 @@ public class AudioCapture {
         // or push to talk disengaged. Again, not sure which applies here yet
         while(true) {
             mic.read(data, 0, data.length);
-
             try {
-                //this.sendAudio(data);
                 this.out.write(data, 0, data.length);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,14 +61,5 @@ public class AudioCapture {
 
         }
     }
-
-    private void sendAudio(byte[] msg) throws Exception {
-        byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
-        this.out.write(msgLen, 0, 4);
-
-        //Next write the message.
-        this.out.write(msg, 0, msg.length);
-    }
-
 
 }
