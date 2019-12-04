@@ -20,24 +20,21 @@ public class Controller {
             public void run() {
                 server.start();
             }
-        }
-        );
+        });
         mfThread = new Thread(new Runnable()
         {
             @Override
             public void run() {
                 mf.start();
             }
-        }
-        );
+        });
         clientThread = new Thread(new Runnable()
         {
             @Override
             public void run() {
                 client.runClient();
             }
-        }
-        );
+        });
     }
 
     public static void main(String[] args) {

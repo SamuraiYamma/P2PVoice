@@ -21,6 +21,8 @@ public class Client {
     //audio capture
     private AudioCapture ac;
     private AudioPlayback pb;
+    private Thread capThread;
+    private Thread playThread;
 
     /**
      * constructor
@@ -132,8 +134,24 @@ public class Client {
         }
         this.ac = new AudioCapture(remote);
         this.pb = new AudioPlayback(remote);
-        this.ac.readAudio();
-        this.pb.playAudio();
+
+        capThread = new Thread(new Runnable()
+        {
+            @Override
+            public void run() {
+                ac.readAudio();
+            }
+        });
+
+        playThread = new Thread(new Runnable()
+        {
+            @Override
+            public void run() {
+                pb.playAudio();
+            }
+        });
+        capThread.start();
+        playThread.start();
     }
 
     /**
