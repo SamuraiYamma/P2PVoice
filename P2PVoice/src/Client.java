@@ -123,7 +123,11 @@ public class Client {
      * @param peerPort the port on that ip to connect to
      */
     public void call(String peerIP, int peerPort){
-        //TODO: Add actual call functionality
+        //TODO: Should we split this method into
+        // receiveCall and sendCall? Because the logic
+        // is different for them. Of course, we could change
+        // the mode to CALLING inside MainFrame when the call
+        // button is hit, but that doesn't seem correct.
         Socket remote = null;
         try {
             remote = new Socket(peerIP, peerPort);
@@ -150,6 +154,7 @@ public class Client {
         });
         capThread.start();
         playThread.start();
+
     }
 
     /**
