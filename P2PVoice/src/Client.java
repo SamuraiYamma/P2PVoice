@@ -49,9 +49,7 @@ public class Client {
             //TODO: we eventually want localhost here to be sysIP
             socket = new Socket("localhost", port);
             clientIn = socket.getInputStream();
-            //clientOut = new BufferedOutputStream(socket.getOutputStream());
             clientOut = socket.getOutputStream();
-            sendMyInfo();
 
 
         } catch (IOException e) {
@@ -60,6 +58,11 @@ public class Client {
 
 
         mainFrame.setMode(Status.ONLINE);
+        while(true) {
+            try {
+                String call = this.getMessage(clientIn);
+            } catch(Exception e){};
+        }
     }
 
     //HELPERS
