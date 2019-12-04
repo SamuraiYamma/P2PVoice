@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Client {
 
     //class stuff
-//    private String locIP; //im not sure we need this
+//private String locIP; //im not sure we need this
     private String sysIP;
     private int port;
     private MainFrame mainFrame;
