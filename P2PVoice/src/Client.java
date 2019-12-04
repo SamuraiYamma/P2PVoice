@@ -80,10 +80,10 @@ public class Client {
     /**
      * accept an incoming connect, begin next phase
      */
-    public void accept(){
+    public void accept() throws Exception {
         //TODO: Remove these lines when in production
         System.out.println("Accepting call...");
-
+        sendMessage("YES", clientOut);
         mainFrame.setMode(Status.CONNECTED);
         call(peerIP, peerPort);
 
