@@ -51,7 +51,9 @@ public class Client {
             clientIn = socket.getInputStream();
             //clientOut = new BufferedOutputStream(socket.getOutputStream());
             clientOut = socket.getOutputStream();
-            sendMyInfo();
+            //sendMyInfo();
+
+
 
 
         } catch (IOException e) {
@@ -60,6 +62,12 @@ public class Client {
 
 
         mainFrame.setMode(Status.ONLINE);
+
+        while(true) {
+            try {
+                String connect = getMessage(clientIn);
+            } catch(Exception e){};
+        }
     }
 
     //HELPERS
