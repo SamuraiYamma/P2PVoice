@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  * TODO: Convert these stubs into an actual server that works
  */
 public class BasicServer {
-    public static void main(String[] args) {
+    public  void start() {
         int port = 44444;
 
         //start listening for incoming connections
