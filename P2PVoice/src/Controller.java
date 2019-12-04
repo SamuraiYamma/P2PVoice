@@ -13,6 +13,15 @@ public class Controller {
             }
         }
         );
+
+        Thread clientThread = new Thread(new Runnable()
+        {
+            @Override
+            public void run() {
+                client.runClient();
+            }
+        }
+        );
     }
 
     public static void main(String[] args) {
