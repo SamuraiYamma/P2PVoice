@@ -245,7 +245,7 @@ public class MainFrame extends JFrame {
      * and is connected to the internet. This is the default state.
      */
     private void offlineMode(){
-        String ipStub = client.getSysIP();
+        //String ipStub = client.getSysIP();
 
         //call button
         callButton.setEnabled(false);
@@ -261,7 +261,7 @@ public class MainFrame extends JFrame {
         timerLabel.setText("00:00");
 
         //user info
-        userIPLabel.setText("My IP: " + ipStub);
+        //userIPLabel.setText("My IP: " + ipStub);
         userPortLabel.setText("My Port: " + port);
 
         //TODO: Implement some way of getting to online mode/connected mode. May not happen in this class

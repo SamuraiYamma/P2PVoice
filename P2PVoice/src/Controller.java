@@ -1,11 +1,13 @@
 public class Controller {
     MainFrame mf;
     Client client;
+    static Thread mfThread;
+    static Thread clientThread;
     public Controller() {
         mf = new MainFrame();
         client = new Client(mf.getPort(), mf);
         mf.setClient(client);
-        Thread mfThread = new Thread(new Runnable()
+        mfThread = new Thread(new Runnable()
         {
             @Override
             public void run() {
@@ -13,8 +15,7 @@ public class Controller {
             }
         }
         );
-
-        Thread clientThread = new Thread(new Runnable()
+        clientThread = new Thread(new Runnable()
         {
             @Override
             public void run() {
@@ -22,9 +23,16 @@ public class Controller {
             }
         }
         );
+
+
+
+
     }
 
     public static void main(String[] args) {
+        Controller c = new Controller();
+        mfThread.start();
+        clientThread.start();
 
     }
 }
