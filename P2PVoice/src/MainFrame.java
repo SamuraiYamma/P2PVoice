@@ -21,6 +21,7 @@ public class MainFrame extends JFrame {
     private JLabel userPortLabel;
 
     private Client client;
+    private int port;
 
     /**
      * main method
@@ -45,16 +46,23 @@ public class MainFrame extends JFrame {
      * constructor
      */
     public MainFrame() {
-        int port = getPort();
-        client = new Client(port, this);
+        port = Integer.parseInt(JOptionPane.showInputDialog("Which port would you like to run on?"));
+        //client = new Client(port, this);
 
         init();
         setMode(Status.OFFLINE); //default to offline to begin with
 
         //now that everything has instantiated, run client
-        client.runClient();
+        //client.runClient();
     }
 
+    public int getPort() {
+        return this.port;
+    }
+
+    public void setClient(Client c) {
+        this.client = c;
+    }
     /**
      * inits all gui elements
      */
@@ -165,12 +173,7 @@ public class MainFrame extends JFrame {
         add(statusPanel);
     }
 
-    /**
-     * make a quick option pane that asks for port info
-     */
-    private int getPort(){
-        return Integer.parseInt(JOptionPane.showInputDialog("Which port would you like to run on?"));
-    }
+
     /**
      * listener for all buttons
      */
@@ -243,7 +246,6 @@ public class MainFrame extends JFrame {
      */
     private void offlineMode(){
         String ipStub = client.getSysIP();
-        int portStub = client.getPort();
 
         //call button
         callButton.setEnabled(false);
@@ -260,7 +262,7 @@ public class MainFrame extends JFrame {
 
         //user info
         userIPLabel.setText("My IP: " + ipStub);
-        userPortLabel.setText("My Port: " + portStub);
+        userPortLabel.setText("My Port: " + port);
 
         //TODO: Implement some way of getting to online mode/connected mode. May not happen in this class
     }
@@ -270,7 +272,6 @@ public class MainFrame extends JFrame {
      */
     private void onlineMode(){
         String ipStub = client.getSysIP();
-        int portStub = client.getPort();
 
         //call button
         callButton.setEnabled(true);
@@ -288,7 +289,7 @@ public class MainFrame extends JFrame {
 
         //user info
         userIPLabel.setText("My IP: " + ipStub);
-        userPortLabel.setText("My Port: " + portStub);
+        userPortLabel.setText("My Port: " + port);
     }
 
     /**
@@ -297,7 +298,6 @@ public class MainFrame extends JFrame {
      */
     private void receivingMode(){
         String ipStub = client.getSysIP();
-        int portStub = client.getPort();
 
         //call button
         callButton.setEnabled(true);
@@ -316,7 +316,7 @@ public class MainFrame extends JFrame {
 
         //user info
         userIPLabel.setText("My IP: " + ipStub);
-        userPortLabel.setText("My Port: " + portStub);
+        userPortLabel.setText("My Port: " + port);
     }
 
     /**
@@ -325,7 +325,6 @@ public class MainFrame extends JFrame {
      */
     private void callingMode(){
         String ipStub = client.getSysIP();
-        int portStub = client.getPort();
 
         //call button
         callButton.setEnabled(false);
@@ -345,7 +344,7 @@ public class MainFrame extends JFrame {
 
         //user info
         userIPLabel.setText("My IP: " + ipStub);
-        userPortLabel.setText("My Port: " + portStub);
+        userPortLabel.setText("My Port: " + port);
     }
 
     /**
@@ -353,7 +352,6 @@ public class MainFrame extends JFrame {
      */
     private void connectedMode(){
         String ipStub = client.getSysIP();
-        int portStub = client.getPort();
 
         //call button
         callButton.setEnabled(false);
@@ -370,6 +368,6 @@ public class MainFrame extends JFrame {
 
         //user info
         userIPLabel.setText("My IP: " + ipStub);
-        userPortLabel.setText("My Port: " + portStub);
+        userPortLabel.setText("My Port: " + port);
     }
 }
