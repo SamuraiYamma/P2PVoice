@@ -3,6 +3,10 @@ import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 
+/**
+ * Class for capturing audio from microphone,
+ * and for sending the audio over a socket
+ */
 public class AudioCapture {
     private TargetDataLine mic;
     private DataLine.Info info;
@@ -10,6 +14,10 @@ public class AudioCapture {
     private Socket socket;
     private OutputStream out;
 
+    /**
+     *  Constructor, sets up audio format to read from mic
+     * @param socket
+     */
     public AudioCapture(Socket socket) {
         this.socket = socket;
         try {
@@ -31,6 +39,10 @@ public class AudioCapture {
 
     }
 
+    /**
+     * Primary function, reads audio from microphone and
+     * sends it to the socket
+     */
     public void readAudio() {
         int bRead;
         byte[] data = new byte[mic.getBufferSize()/5];

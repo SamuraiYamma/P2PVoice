@@ -2,9 +2,12 @@ import javax.sound.sampled.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
-import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * class for reading audio data from socket,
+ * and for playing it over speakers
+ */
 public class AudioPlayback {
     private Socket socket;
     private InputStream in;
@@ -12,7 +15,10 @@ public class AudioPlayback {
     private AudioFormat format;
     private SourceDataLine speakers;
 
-
+    /**
+     * Constructor, sets up speaker format
+     * @param socket
+     */
     public AudioPlayback(Socket socket) {
         this.socket = socket;
         try {
@@ -31,6 +37,9 @@ public class AudioPlayback {
         }
     }
 
+    /**
+     * Primary function, reads audio from socket
+     */
     public void playAudio() {
         int bRead;
         byte[] data = new byte[speakers.getBufferSize()/5];
@@ -41,8 +50,11 @@ public class AudioPlayback {
         // or push to talk disengaged. Not sure which applies here yet
         while(true) {
             try {
-                bRead = in.read(data, 0, data.length);
+                //bRead = in.read(data, 0, data.length);
+                data = getAudio();
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             speakers.write(data, 0, data.length);
