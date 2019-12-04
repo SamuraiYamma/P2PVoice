@@ -2,6 +2,7 @@
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -25,23 +26,18 @@ import java.util.concurrent.Executors;
 public class BasicServer {
     public void start() {
         int port = 44444;
-        int nmThread = 0;
         //start listening for incoming connections
         try{
             ServerSocket ss = new ServerSocket(port);
             ServerSocket listener = ss;
-            ExecutorService threadPool = Executors.newFixedThreadPool(3);
+            Socket local;
+            ExecutorService threadPool = Executors.newFixedThreadPool(2);
+
+            local = listener.accept();
             while (true){
                 //assign incoming connection to new thread
-                //TODO: Make this more robust. We need to add functionality
-                // in the event that the call is ended
+                threadPool.execute(new RemoteHandler(listener.accept(), local));
 
-                if(nmThread == 0) {
-                    threadPool.execute(new ClientHandler(listener.accept()));
-                    nmThread = 1;
-                } else if(nmThread == 1) {
-                    threadPool.execute(new RemoteHandler(listener.accept()));
-                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,54 +51,38 @@ public class BasicServer {
      *  and play back audio received from them.
      */
     private static class RemoteHandler implements Runnable {
-        private Socket socket;
+        private Socket remote;
+        private Socket local;
         private AudioPlayback pb;
-        RemoteHandler(Socket s) throws Exception {
-            socket = s;
-            pb = new AudioPlayback(s);
-        }
 
-        @Override
-        public void run() {
-            pb.playAudio();
-        }
-    }
-    /**
-     * client handler controls the thread to connect
-     * to it's local client
-     */
-    private static class ClientHandler implements Runnable{
-        private Socket socket;
+        // These streams are for communicating with the local client.
+        private OutputStream serverOut;
         private InputStream serverIn;
-        private BufferedOutputStream serverOut;
-        /**
-         * constructor
-         * @param s
-         * @throws Exception
-         */
-        ClientHandler(Socket s) throws Exception{
-            socket = s;
-            serverIn = s.getInputStream();
-            serverOut = new BufferedOutputStream(s.getOutputStream());
+
+
+        RemoteHandler(Socket remote, Socket local) throws Exception {
+            this.remote = remote;
+            this.local = local;
+
+            serverOut = local.getOutputStream();
+            serverIn = local.getInputStream();
+
+            pb = new AudioPlayback(remote);
         }
 
         @Override
-        /**
-         * Start function for new threads
-         * In our case, we want to listen for calls
-         */
         public void run() {
-            String request;
+            String peerInfo = local.getInetAddress().toString() + ":" + local.getPort();
+            String response = "";
             try {
-                request = this.getMessage();
-                System.out.println(request);
-                this.socket.close();
-
-                //TODO: This line is for testing only
-                System.out.println(request);
-
+                sendMessage(peerInfo.getBytes());
+                response = getMessage();
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+
+            if(response.equals("YES")) {
+                pb.playAudio();
             }
         }
 
@@ -132,7 +112,10 @@ public class BasicServer {
             this.serverIn.read(msg, 0, len);
             return new String(msg);
         }
+
+
     }
+
 }
 
 
