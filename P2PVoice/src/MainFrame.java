@@ -190,6 +190,7 @@ public class MainFrame extends JFrame {
 
                 //TODO: development only. delete this when moving to production
                 System.out.printf("Address: %s:%d\n", ip, port);
+                client.call(ip, port);
             }
         }
     }

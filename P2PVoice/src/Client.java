@@ -129,7 +129,7 @@ public class Client {
      * @param peerIP the ip to connect to
      * @param peerPort the port on that ip to connect to
      */
-    private void call(String peerIP, int peerPort){
+    public void call(String peerIP, int peerPort){
         //TODO: Add actual call functionality
         Socket remote = null;
         try {
