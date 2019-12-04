@@ -20,6 +20,7 @@ public class Client {
 
     //audio capture
     private AudioCapture ac;
+    private AudioPlayback pb;
 
     /**
      * constructor
@@ -130,7 +131,9 @@ public class Client {
             e.printStackTrace();
         }
         this.ac = new AudioCapture(remote);
+        this.pb = new AudioPlayback(remote);
         this.ac.readAudio();
+        this.pb.playAudio();
     }
 
     /**

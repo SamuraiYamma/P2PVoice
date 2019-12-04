@@ -55,6 +55,7 @@ public class BasicServer {
         private Socket remote;
         private Socket local;
         private AudioPlayback pb;
+        private AudioCapture ac;
         private int port;
 
         // These streams are for communicating with the local client.
@@ -70,6 +71,7 @@ public class BasicServer {
             serverIn = local.getInputStream();
 
             pb = new AudioPlayback(remote);
+            ac = new AudioCapture(remote);
         }
 
         @Override
@@ -85,6 +87,7 @@ public class BasicServer {
 
             if(response.equals("YES")) {
                 pb.playAudio();
+                ac.readAudio();
             }
         }
 
