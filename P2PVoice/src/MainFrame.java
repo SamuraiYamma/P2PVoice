@@ -22,10 +22,10 @@ public class MainFrame extends JFrame {
 
     private Client client;
     private int port;
+    private Status mode;
 
     /**
-     * main method
-     * @param args
+     * starts us off
      */
     public void start() {
         JFrame frame = this;
@@ -173,9 +173,8 @@ public class MainFrame extends JFrame {
         add(statusPanel);
     }
 
-
     /**
-     * listener for all buttons
+     * listener for all buttons on call panel
      */
     class CallPanelListener implements ActionListener {
 
@@ -195,18 +194,21 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * listener for all buttons on status panel
+     */
     class StatusPanelListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(actionEvent.getSource() == acceptButton){
-                //TODO: connect the accept button to the controller
+                client.accept();
             }
             else if(actionEvent.getSource() == denyButton){
-                //TODO: connect the denyButton to the controller
+                client.deny();
             }
             else if(actionEvent.getSource() == endButton){
-                //TODO: connect the endButton to the controller
+                client.end();
             }
         }
     }
@@ -221,6 +223,8 @@ public class MainFrame extends JFrame {
      * @param status enum of type Status
      */
     public void setMode(Status status){
+        mode = status;
+
         switch (status) {
             case OFFLINE:
                 offlineMode();
@@ -238,6 +242,10 @@ public class MainFrame extends JFrame {
                 connectedMode();
                 break;
         }
+    }
+
+    public Status getMode(){
+        return mode;
     }
 
     /**
@@ -269,11 +277,8 @@ public class MainFrame extends JFrame {
      * All functionality besides ending a call is enabled
      */
     private void onlineMode(){
-        String ipStub = client.getSysIP();
-
         //call button
         callButton.setEnabled(true);
-
 
         //status and info
         statusLabel.setText("Status: Online");
@@ -286,7 +291,7 @@ public class MainFrame extends JFrame {
         timerLabel.setText("00:00");
 
         //user info
-        userIPLabel.setText("My IP: " + ipStub);
+        userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
     }
 
@@ -295,15 +300,12 @@ public class MainFrame extends JFrame {
      * with a 30 second countdown timer
      */
     private void receivingMode(){
-        String ipStub = client.getSysIP();
-
         //call button
         callButton.setEnabled(true);
 
-
         //status and info
         statusLabel.setText("Status: Receiving Call");
-        fromIPLabel.setText("From: " + ipStub);
+        fromIPLabel.setText("From: " + client.getPeerIP());
 
         //buttons and timer
         acceptButton.setEnabled(true);
@@ -313,7 +315,7 @@ public class MainFrame extends JFrame {
         timerLabel.setText("00:00");
 
         //user info
-        userIPLabel.setText("My IP: " + ipStub);
+        userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
     }
 
@@ -322,15 +324,13 @@ public class MainFrame extends JFrame {
      * Timer increments until it reaches a max of 30s
      */
     private void callingMode(){
-        String ipStub = client.getSysIP();
-
         //call button
         callButton.setEnabled(false);
 
-
         //status and info
         statusLabel.setText("Status: Calling");
-        fromIPLabel.setText("Target: " + ipStub);
+        //TODO: we need to ensure that peerIP in Client.java at this point the correct target, and not just a past
+        fromIPLabel.setText("Target: " + client.getPeerIP());
 
         //buttons and timer
         acceptButton.setEnabled(false);
@@ -341,7 +341,7 @@ public class MainFrame extends JFrame {
         timerLabel.setText("00:00");
 
         //user info
-        userIPLabel.setText("My IP: " + ipStub);
+        userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
     }
 
@@ -349,14 +349,12 @@ public class MainFrame extends JFrame {
      * Only functionality is a continuous timer and the ability to end call
      */
     private void connectedMode(){
-        String ipStub = client.getSysIP();
-
         //call button
         callButton.setEnabled(false);
 
         //status and info
         statusLabel.setText("Status: Online");
-        fromIPLabel.setText("To: " + ipStub);
+        fromIPLabel.setText("To: " + client.getPeerIP());
 
         //buttons and timer
         acceptButton.setEnabled(false);
@@ -365,7 +363,7 @@ public class MainFrame extends JFrame {
         timerLabel.setText("00:00");
 
         //user info
-        userIPLabel.setText("My IP: " + ipStub);
+        userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
     }
 }

@@ -106,6 +106,13 @@ public class Client {
         waitForConnect();
     }
 
+    /**
+     * Terminate a call
+     */
+    public void end(){
+        //TODO: fill this method with useful shit
+    }
+
     public String getPeerIP(){
         return peerIP;
     }
