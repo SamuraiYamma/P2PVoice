@@ -42,7 +42,7 @@ public class AudioPlayback {
      */
     public void playAudio() {
         byte[] data = new byte[speakers.getBufferSize()/5];
-
+        int bRead;
         speakers.start();
 
         //TODO: Instead of looping infinitely, loop until call is ended
@@ -50,7 +50,8 @@ public class AudioPlayback {
         while(true) {
             try {
 
-                data = getAudio();
+                //data = getAudio();
+                bRead = this.in.read(data, 0, data.length);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {

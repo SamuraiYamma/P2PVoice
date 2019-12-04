@@ -46,17 +46,21 @@ public class AudioCapture {
     public void readAudio() {
 
         byte[] data = new byte[mic.getBufferSize()/5];
+        int bRead;
         mic.start();
 
         //TODO: Instead of looping forever, loop only until call is ended
         // or push to talk disengaged. Again, not sure which applies here yet
         while(true) {
             mic.read(data, 0, data.length);
+
             try {
-                this.sendAudio(data);
+                //this.sendAudio(data);
+                this.out.write(data, 0, data.length);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
     }
 
