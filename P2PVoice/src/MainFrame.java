@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
      * main method
      * @param args
      */
-    public static void main(String[] args) {
+    public void start() {
         JFrame frame = new MainFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
