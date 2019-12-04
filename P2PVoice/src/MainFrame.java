@@ -245,8 +245,6 @@ public class MainFrame extends JFrame {
      * and is connected to the internet. This is the default state.
      */
     private void offlineMode(){
-        //String ipStub = client.getSysIP();
-
         //call button
         callButton.setEnabled(false);
 
