@@ -28,7 +28,7 @@ public class MainFrame extends JFrame {
      * @param args
      */
     public void start() {
-        JFrame frame = new MainFrame();
+        JFrame frame = this;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setTitle("P2PVoice");
