@@ -23,6 +23,9 @@ public class Client {
     private String peerIP;
     private int peerPort;
 
+    //audio capture
+    private AudioCapture ac;
+
     /**
      * constructor
      * inits a lot of local variables that the gui may ask for
@@ -32,6 +35,7 @@ public class Client {
         port = p;
         sysIP = myIP();
         mainFrame = mF;
+
     }
 
     //GETTERS
@@ -80,6 +84,9 @@ public class Client {
 
         peerIP = info[0];
         peerPort = Integer.parseInt(info[1]);
+
+        //TODO: Ask user whether they want to accept or decline call
+        accept();
     }
 
     /**
@@ -124,6 +131,14 @@ public class Client {
      */
     private void call(String peerIP, int peerPort){
         //TODO: Add actual call functionality
+        Socket remote = null;
+        try {
+            remote = new Socket(peerIP, peerPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.ac = new AudioCapture(remote);
+        this.ac.readAudio();
     }
 
     /**

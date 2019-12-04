@@ -23,9 +23,9 @@ import java.util.concurrent.Executors;
  * TODO: Convert these stubs into an actual server that works
  */
 public class BasicServer {
-    public  void start() {
+    public void start() {
         int port = 44444;
-
+        int nmThread = 0;
         //start listening for incoming connections
         try{
             ServerSocket ss = new ServerSocket(port);
@@ -33,7 +33,15 @@ public class BasicServer {
             ExecutorService threadPool = Executors.newFixedThreadPool(3);
             while (true){
                 //assign incoming connection to new thread
-                threadPool.execute(new ClientHandler(listener.accept()));
+                //TODO: Make this more robust. We need to add functionality
+                // in the event that the call is ended
+
+                if(nmThread == 0) {
+                    threadPool.execute(new ClientHandler(listener.accept()));
+                    nmThread = 1;
+                } else if(nmThread == 1) {
+                    threadPool.execute(new RemoteHandler(listener.accept()));
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,7 +51,25 @@ public class BasicServer {
     }
 
     /**
-     * client handler controls each thread
+     *  class to handle connections from remote clients
+     *  and play back audio received from them.
+     */
+    private static class RemoteHandler implements Runnable {
+        private Socket socket;
+        private AudioPlayback pb;
+        RemoteHandler(Socket s) throws Exception {
+            socket = s;
+            pb = new AudioPlayback(s);
+        }
+
+        @Override
+        public void run() {
+            pb.playAudio();
+        }
+    }
+    /**
+     * client handler controls the thread to connect
+     * to it's local client
      */
     private static class ClientHandler implements Runnable{
         private Socket socket;

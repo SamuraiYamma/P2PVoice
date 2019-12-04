@@ -36,6 +36,8 @@ public class AudioCapture {
         byte[] data = new byte[mic.getBufferSize()/5];
         mic.start();
 
+        //TODO: Instead of looping forever, loop only until call is ended
+        // or push to talk disengaged. Again, not sure which applies here yet
         while(true) {
             bRead = mic.read(data, 0, data.length);
             try {

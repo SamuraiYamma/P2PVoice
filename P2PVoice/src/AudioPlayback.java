@@ -37,6 +37,8 @@ public class AudioPlayback {
 
         speakers.start();
 
+        //TODO: Instead of looping infinitely, loop until call is ended
+        // or push to talk disengaged. Not sure which applies here yet
         while(true) {
             try {
                 bRead = in.read(data, 0, data.length);
@@ -48,14 +50,10 @@ public class AudioPlayback {
     }
 
     private byte[] getAudio() throws Exception {
-        //First read a 32 bit integer indicating
-        //how many bytes to read for the message.
         byte[] msgLength = new byte[4];
         this.in.read(msgLength, 0, 4);
         int len = ByteBuffer.wrap(msgLength).getInt();
 
-        //Next read len bytes of data and return it
-        //as a string.
         byte[] msg = new byte[len];
         this.in.read(msg, 0, len);
         return msg;
