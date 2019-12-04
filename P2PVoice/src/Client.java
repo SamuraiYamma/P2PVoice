@@ -1,15 +1,10 @@
-import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.Scanner;
 
 public class Client {
 
     //class stuff
-//    private String locIP; //im not sure we need this
     private String sysIP;
     private int port;
     private MainFrame mainFrame;
@@ -35,7 +30,6 @@ public class Client {
         port = p;
         sysIP = myIP();
         mainFrame = mF;
-
     }
 
     //GETTERS
@@ -54,20 +48,14 @@ public class Client {
         We send the server our IP and PORT info.
          */
         try {
-            //TODO: we eventually want localhost here to be sysIP
+
             socket = new Socket("localhost", port);
             clientIn = socket.getInputStream();
-            //clientOut = new BufferedOutputStream(socket.getOutputStream());
             clientOut = socket.getOutputStream();
-            //sendMyInfo();
-
-
-
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         mainFrame.setMode(Status.ONLINE);
 
@@ -117,7 +105,7 @@ public class Client {
      * Terminate a call
      */
     public void end(){
-        //TODO: fill this method with useful shit
+        //TODO: fill this method with useful stuff
     }
 
     public String getPeerIP(){

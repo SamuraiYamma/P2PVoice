@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class for the GUI
+ */
 public class MainFrame extends JFrame {
     private JPanel callPanel, statusPanel;
 

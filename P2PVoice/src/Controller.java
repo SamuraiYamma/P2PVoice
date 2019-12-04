@@ -1,3 +1,7 @@
+/**
+ * Class which runs the server, GUI, and the client
+ * Execute this class to run the program.
+ */
 public class Controller {
     MainFrame mf;
     Client client;
