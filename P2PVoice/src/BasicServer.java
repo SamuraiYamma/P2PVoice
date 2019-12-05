@@ -112,33 +112,6 @@ public class BasicServer {
                 e.printStackTrace();
             }
         }
-
-        /**
-         *
-         * @param msg
-         * @throws Exception
-         */
-        private void sendMessage(byte[] msg, OutputStream out) throws Exception {
-            byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
-            out.write(msgLen, 0, 4);
-            out.write(msg, 0, msg.length);
-        }
-
-        /**
-         *
-         * @return
-         * @throws Exception
-         */
-        private String getMessage(InputStream serverIn) throws Exception {
-            byte[] msgLength = new byte[4];
-            serverIn.read(msgLength, 0, 4);
-
-            int len = ByteBuffer.wrap(msgLength).getInt();
-            System.out.println(len + "");
-            byte[] msg = new byte[len];
-            serverIn.read(msg, 0, len);
-            return new String(msg);
-        }
     }
     /**
      *  class to handle connections from remote clients
@@ -213,35 +186,35 @@ public class BasicServer {
 
 
 
-        /**
-         *
-         * @param msg
-         * @throws Exception
-         */
-        private void sendMessage(byte[] msg, OutputStream out) throws Exception {
-            byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
-            out.write(msgLen, 0, 4);
-            out.write(msg, 0, msg.length);
-        }
 
-        /**
-         *
-         * @return
-         * @throws Exception
-         */
-        private String getMessage(InputStream serverIn) throws Exception {
-            byte[] msgLength = new byte[4];
-            serverIn.read(msgLength, 0, 4);
-
-            int len = ByteBuffer.wrap(msgLength).getInt();
-            System.out.println(len + "");
-            byte[] msg = new byte[len];
-            serverIn.read(msg, 0, len);
-            return new String(msg);
-        }
     }
 
+    /**
+     *
+     * @param msg
+     * @throws Exception
+     */
+    private static void sendMessage(byte[] msg, OutputStream out) throws Exception {
+        byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
+        out.write(msgLen, 0, 4);
+        out.write(msg, 0, msg.length);
+    }
 
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
+    private static String getMessage(InputStream serverIn) throws Exception {
+        byte[] msgLength = new byte[4];
+        serverIn.read(msgLength, 0, 4);
+
+        int len = ByteBuffer.wrap(msgLength).getInt();
+        System.out.println(len + "");
+        byte[] msg = new byte[len];
+        serverIn.read(msg, 0, len);
+        return new String(msg);
+    }
 
 }
 
