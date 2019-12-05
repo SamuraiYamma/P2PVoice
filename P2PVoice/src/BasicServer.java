@@ -27,6 +27,7 @@ public class BasicServer {
 
     public void start() {
         int port = 44444;
+
         //start listening for incoming connections
         try{
             ServerSocket ss = new ServerSocket(port);
@@ -35,10 +36,10 @@ public class BasicServer {
             ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
             local = listener.accept();
+            threadPool.execute((new ClientHandler(local)));
             while (true){
                 //assign incoming connection to new thread
                 threadPool.execute(new RemoteHandler(listener.accept(), local, port));
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,6 +48,71 @@ public class BasicServer {
         }
     }
 
+
+    public static class ClientHandler implements Runnable {
+        private Socket local;
+
+
+        private OutputStream serverOut;
+        private InputStream serverIn;
+
+        private Thread capThread;
+        private Thread playThread;
+
+
+        ClientHandler(Socket socket) throws IOException {
+            this.local = socket;
+
+            serverIn = this.local.getInputStream();
+            serverOut = this.local.getOutputStream();
+        }
+
+        @Override
+        public void run() {
+            try {
+                String ip = getMessage(serverIn);
+                int port = Integer.parseInt(getMessage(serverIn));
+
+                Socket remote = new Socket(ip, port);
+
+                String localInfo = local.getLocalAddress().toString().substring(1) + ":" + local.getLocalPort();
+
+                sendMessage(localInfo.getBytes(), remote.getOutputStream());
+
+                String response = getMessage(remote.getInputStream());
+
+                if(response.equals("YES")) {
+                    AudioPlayback pb = new AudioPlayback(remote);
+                    AudioCapture ac = new AudioCapture(remote);
+
+                    capThread = new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run() {
+                            ac.readAudio();
+                        }
+                    });
+
+                    playThread = new Thread(new Runnable()
+                    {
+                        @Override
+                        public void run() {
+                            pb.playAudio();
+                        }
+                    });
+
+                    capThread.start();
+                    playThread.start();
+
+                    // TODO: Wait for response from client or remote to end call
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      *  class to handle connections from remote clients
      *  and play back audio received from them.
@@ -73,23 +139,29 @@ public class BasicServer {
             serverOut = local.getOutputStream();
             serverIn = local.getInputStream();
 
-            pb = new AudioPlayback(remote);
-            ac = new AudioCapture(remote);
+
         }
 
         @Override
         public void run() {
-            String peerInfo = local.getInetAddress().toString().substring(1) + ":" + port;
+            //String peerInfo = local.getInetAddress().toString().substring(1) + ":" + port;
+
             String response = "";
             try {
+                String peerInfo = getMessage(remote.getInputStream());
+
+
                 sendMessage(peerInfo.getBytes(), this.serverOut);
-                response = getMessage();
+                response = getMessage(this.serverIn);
                 sendMessage(response.getBytes(), remote.getOutputStream());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             if(response.equals("YES")) {
+                pb = new AudioPlayback(remote);
+                ac = new AudioCapture(remote);
+
                 capThread = new Thread(new Runnable()
                 {
                     @Override
@@ -112,34 +184,36 @@ public class BasicServer {
             }
         }
 
-        /**
-         *
-         * @param msg
-         * @throws Exception
-         */
-        private void sendMessage(byte[] msg, OutputStream out) throws Exception {
-            byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
-            out.write(msgLen, 0, 4);
-            out.write(msg, 0, msg.length);
-        }
-
-        /**
-         *
-         * @return
-         * @throws Exception
-         */
-        private String getMessage() throws Exception {
-            byte[] msgLength = new byte[4];
-            this.serverIn.read(msgLength, 0, 4);
-
-            int len = ByteBuffer.wrap(msgLength).getInt();
-            System.out.println(len + "");
-            byte[] msg = new byte[len];
-            this.serverIn.read(msg, 0, len);
-            return new String(msg);
-        }
 
 
+
+    }
+
+    /**
+     *
+     * @param msg
+     * @throws Exception
+     */
+    private static void sendMessage(byte[] msg, OutputStream out) throws Exception {
+        byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
+        out.write(msgLen, 0, 4);
+        out.write(msg, 0, msg.length);
+    }
+
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
+    private static String getMessage(InputStream serverIn) throws Exception {
+        byte[] msgLength = new byte[4];
+        serverIn.read(msgLength, 0, 4);
+
+        int len = ByteBuffer.wrap(msgLength).getInt();
+        System.out.println(len + "");
+        byte[] msg = new byte[len];
+        serverIn.read(msg, 0, len);
+        return new String(msg);
     }
 
 }

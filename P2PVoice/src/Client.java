@@ -158,7 +158,21 @@ public class Client {
          */
         //TODO: This should contact the local server, and request it to
         // to initiate communication with the remote server
+        mainFrame.setMode(Status.CALLING);
+        try {
+            sendMessage(peerIP, this.clientOut);
+            sendMessage(peerPort + "", this.clientOut);
 
+            String response = getMessage(this.clientIn);
+            if(response.equals("YES")) {
+                mainFrame.setMode(Status.CONNECTED);
+            } else {
+                mainFrame.setMode(Status.ONLINE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
