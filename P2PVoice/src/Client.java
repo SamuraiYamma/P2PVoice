@@ -128,6 +128,7 @@ public class Client {
         // is different for them. Of course, we could change
         // the mode to CALLING inside MainFrame when the call
         // button is hit, but that doesn't seem correct.
+        /**
         Socket remote = null;
         try {
             remote = new Socket(peerIP, peerPort);
@@ -154,6 +155,11 @@ public class Client {
         });
         capThread.start();
         playThread.start();
+         */
+        //TODO: This should contact the local server, and request it to
+        // to initiate communication with the remote server
+
+
 
     }
 

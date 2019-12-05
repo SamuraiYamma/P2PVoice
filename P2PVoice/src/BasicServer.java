@@ -58,6 +58,9 @@ public class BasicServer {
         private AudioCapture ac;
         private int port;
 
+        private Thread capThread;
+        private Thread playThread;
+
         // These streams are for communicating with the local client.
         private OutputStream serverOut;
         private InputStream serverIn;
@@ -79,15 +82,33 @@ public class BasicServer {
             String peerInfo = local.getInetAddress().toString().substring(1) + ":" + port;
             String response = "";
             try {
-                sendMessage(peerInfo.getBytes());
+                sendMessage(peerInfo.getBytes(), this.serverOut);
                 response = getMessage();
+                sendMessage(response.getBytes(), remote.getOutputStream());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             if(response.equals("YES")) {
-                pb.playAudio();
-                ac.readAudio();
+                capThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        ac.readAudio();
+                    }
+                });
+
+                playThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        pb.playAudio();
+                    }
+                });
+
+                capThread.start();
+                playThread.start();
+
             }
         }
 
@@ -96,10 +117,10 @@ public class BasicServer {
          * @param msg
          * @throws Exception
          */
-        private void sendMessage(byte[] msg) throws Exception {
+        private void sendMessage(byte[] msg, OutputStream out) throws Exception {
             byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
-            this.serverOut.write(msgLen, 0, 4);
-            this.serverOut.write(msg, 0, msg.length);
+            out.write(msgLen, 0, 4);
+            out.write(msg, 0, msg.length);
         }
 
         /**
