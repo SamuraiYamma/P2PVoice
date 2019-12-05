@@ -90,7 +90,7 @@ public class Client {
             e.printStackTrace();
         }
         mainFrame.setMode(Status.CONNECTED);
-        call(peerIP, peerPort);
+        //call(peerIP, peerPort);
 
 
     }
