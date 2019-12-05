@@ -33,7 +33,7 @@ public class BasicServer {
             ServerSocket ss = new ServerSocket(port);
             ServerSocket listener = ss;
             Socket local;
-            ExecutorService threadPool = Executors.newFixedThreadPool(2);
+            ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
             local = listener.accept();
             threadPool.execute((new ClientHandler(local)));
