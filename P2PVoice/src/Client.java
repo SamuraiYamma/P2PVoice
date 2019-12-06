@@ -135,26 +135,55 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.ac = new AudioCapture(remote);
-        this.pb = new AudioPlayback(remote);
+        //WAIT FOR A RESPONSE FROM REMOTE
+        try {
+            OutputStream remoteOut = remote.getOutputStream();
+            InputStream remoteIn = remote.getInputStream();
 
-        capThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                ac.readAudio();
+            String response = "";
+            try {
+                response = getMessage(remoteIn);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
 
-        playThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                pb.playAudio();
+            if(response.equals("YES")){
+                this.ac = new AudioCapture(remote);
+                this.pb = new AudioPlayback(remote);
+
+                capThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        ac.readAudio();
+                    }
+                });
+
+                playThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        pb.playAudio();
+                    }
+                });
+                capThread.start();
+                playThread.start();
             }
-        });
-        capThread.start();
-        playThread.start();
+            else if(response.equals("NO")){
+                //TODO: Remove in production
+                System.out.println("Tried to make a call, they denied us");
+
+                mainFrame.setMode(Status.ONLINE);
+                waitForConnect();
+            }
+            else {
+                //TODO: Remove in production
+                System.out.println("Not sure what the client response was");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void receiveCall(String peerIP, int peerPort){
@@ -276,6 +305,7 @@ public class Client {
         in.read(msg, 0, len);
         return new String(msg);
     }
+
 
     /**
      * Sends my info in the output stream
