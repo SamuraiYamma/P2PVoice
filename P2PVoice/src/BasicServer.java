@@ -62,6 +62,7 @@ public class BasicServer {
         private OutputStream serverOut;
         private InputStream serverIn;
 
+        //connection info
 
         RemoteHandler(Socket remote, Socket local, int port) throws Exception {
             this.remote = remote;
@@ -88,6 +89,13 @@ public class BasicServer {
             if(response.equals("YES")) {
                 pb.playAudio();
                 ac.readAudio();
+            }
+            else if(response.equals("NO")){
+                //send a message back to their server
+                System.out.println("Client received a deny");
+//                try{
+//                    Socket socket = new Socket()
+//                }
             }
         }
 

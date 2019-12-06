@@ -90,7 +90,7 @@ public class Client {
             e.printStackTrace();
         }
         mainFrame.setMode(Status.CONNECTED);
-        call(peerIP, peerPort);
+        receiveCall(peerIP, peerPort);
 
 
     }
@@ -102,6 +102,11 @@ public class Client {
     public void deny(){
         //TODO: Remove these lines when in production
         System.out.println("Denying call...");
+        try {
+            sendMessage("NO", clientOut);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         mainFrame.setMode(Status.ONLINE);
         waitForConnect();
     }
@@ -122,7 +127,7 @@ public class Client {
      * @param peerIP the ip to connect to
      * @param peerPort the port on that ip to connect to
      */
-    public void call(String peerIP, int peerPort){
+    public void makeCall(String peerIP, int peerPort){
         //TODO: Add actual call functionality
         Socket remote = null;
         try {
@@ -151,6 +156,11 @@ public class Client {
         capThread.start();
         playThread.start();
     }
+
+    public void receiveCall(String peerIP, int peerPort){
+
+    }
+
 
     /**
      * waits for incoming connections
