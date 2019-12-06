@@ -26,7 +26,7 @@ public class AudioPlayback {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        format = new AudioFormat(8000.0f, 16, 1, true, true);
+        format = new AudioFormat(10000.0f, 8, 1, true, true);
         info = new DataLine.Info(SourceDataLine.class, format);
 
         try {
@@ -41,7 +41,7 @@ public class AudioPlayback {
      * Primary function, reads audio from socket
      */
     public void playAudio() {
-        byte[] data = new byte[speakers.getBufferSize()/5];
+        byte[] data = new byte[speakers.getBufferSize() * 2 / 10];
         speakers.start();
 
         //TODO: Instead of looping infinitely, loop until call is ended
