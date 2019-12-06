@@ -75,7 +75,7 @@ public class Client {
 
         peerIP = info[0];
         peerPort = Integer.parseInt(info[1]);
-
+		mainFrame.setMode(Status.RECEIVING);
     }
 
     /**
@@ -90,18 +90,24 @@ public class Client {
             e.printStackTrace();
         }
         mainFrame.setMode(Status.CONNECTED);
-        call(peerIP, peerPort);
+        receiveCall(peerIP, peerPort);
 
 
     }
 
     /**
-     * deny an incoming connection. send deny response
+     * deny an incoming connection.
+     * sends this response to local server
      * reset system to online
      */
     public void deny(){
         //TODO: Remove these lines when in production
         System.out.println("Denying call...");
+        try {
+            sendMessage("NO", clientOut);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         mainFrame.setMode(Status.ONLINE);
         waitForConnect();
     }
@@ -111,6 +117,8 @@ public class Client {
      */
     public void end(){
         //TODO: fill this method with useful stuff
+		mainFrame.setMode(Status.ONLINE);
+		waitForConnect();
     }
 
     public String getPeerIP(){
@@ -119,38 +127,80 @@ public class Client {
 
     /**
      * call another server with these credentials
+     *
+     * wait for a response.
+     * if yes, then continue with making a call
+     * if no, reset stats
+     *
      * @param peerIP the ip to connect to
      * @param peerPort the port on that ip to connect to
      */
-    public void call(String peerIP, int peerPort){
+    public void makeCall(String peerIP, int peerPort){
         //TODO: Add actual call functionality
+		
         Socket remote = null;
         try {
+
+            //THIS CONNECTION IS THE TRIGGER
             remote = new Socket(peerIP, peerPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.ac = new AudioCapture(remote);
-        this.pb = new AudioPlayback(remote);
-
-        capThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                ac.readAudio();
+        //WAIT FOR A RESPONSE FROM REMOTE
+        try {
+            OutputStream remoteOut = remote.getOutputStream();
+            InputStream remoteIn = remote.getInputStream();
+            //THIS STRING IS THE RESPONSE FROM THE TRIGGER
+			String response = "";
+            try {
+                response = getMessage(remoteIn);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+			
+            if(response.equals("YES")){
+                mainFrame.setMode(Status.CONNECTED);
+                this.ac = new AudioCapture(remote);
+                this.pb = new AudioPlayback(remote);
 
-        playThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                pb.playAudio();
+                capThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        ac.readAudio();
+                    }
+                });
+
+                playThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        pb.playAudio();
+                    }
+                });
+                capThread.start();
+                playThread.start();
             }
-        });
-        capThread.start();
-        playThread.start();
+            else if(response.equals("NO")){
+                //TODO: Remove in production
+                System.out.println("Tried to make a call, they denied us");
+                mainFrame.setMode(Status.ONLINE);
+                waitForConnect();
+            }
+            else {
+                //TODO: Remove in production
+                System.out.println("Not sure what the client response was");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    public void receiveCall(String peerIP, int peerPort){
+
+    }
+
 
     /**
      * waits for incoming connections
@@ -161,7 +211,6 @@ public class Client {
             try {
                 String connect = getMessage(clientIn);
                 receive(connect); //TODO: sketchy as hell
-
             } catch(Exception e){};
         }
     }
@@ -266,6 +315,7 @@ public class Client {
         in.read(msg, 0, len);
         return new String(msg);
     }
+
 
     /**
      * Sends my info in the output stream

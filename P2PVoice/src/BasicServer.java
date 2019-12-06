@@ -1,4 +1,3 @@
-
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,13 +61,27 @@ public class BasicServer {
         private OutputStream serverOut;
         private InputStream serverIn;
 
+        private OutputStream remoteOut;
+        private InputStream remoteIn;
+
+        private Thread capThread;
+        private Thread playThread;
+
+        //connection info
 
         RemoteHandler(Socket remote, Socket local, int port) throws Exception {
+            //TODO: Remove in production
+            System.out.println("Receiving a call from: " + remote.toString());
+
             this.remote = remote;
             this.local = local;
             this.port = port;
             serverOut = local.getOutputStream();
             serverIn = local.getInputStream();
+
+            //TODO:TESTING THIS:
+            remoteOut = remote.getOutputStream();
+            remoteIn = remote.getInputStream();
 
             pb = new AudioPlayback(remote);
             ac = new AudioCapture(remote);
@@ -86,9 +99,47 @@ public class BasicServer {
             }
 
             if(response.equals("YES")) {
-                pb.playAudio();
-                ac.readAudio();
+                try {
+                    sendMessage("YES", remoteOut);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                capThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        ac.readAudio();
+                    }
+                });
+
+                playThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        pb.playAudio();
+                    }
+                });
+                capThread.start();
+                playThread.start();
             }
+            else if(response.equals("NO")){
+                //send a message back to their server
+                System.out.println("Client received a deny");
+
+                //PASS ON THE DENY
+                try {
+                    sendMessage("NO", remoteOut);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        void sendMessage(String send, OutputStream out) throws Exception {
+            byte[] msg = send.getBytes();
+            byte[] msgLen = ByteBuffer.allocate(4).putInt(msg.length).array();
+            out.write(msgLen, 0, 4);
+            out.write(msg, 0, msg.length);
         }
 
         /**
@@ -122,5 +173,3 @@ public class BasicServer {
     }
 
 }
-
-

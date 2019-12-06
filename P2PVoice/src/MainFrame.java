@@ -23,6 +23,12 @@ public class MainFrame extends JFrame {
     private JLabel userIPLabel;
     private JLabel userPortLabel;
 
+	private JLabel imageLabel;
+	private ImageIcon offlineIcon;
+	private ImageIcon onlineIcon;
+	private ImageIcon connectingIcon;
+	private ImageIcon connectedIcon;
+	
     private Client client;
     private int port;
     private Status mode;
@@ -174,6 +180,13 @@ public class MainFrame extends JFrame {
         setLayout(new FlowLayout());
         add(callPanel);
         add(statusPanel);
+		
+		//instantializes icons
+		imageLabel = new JLabel();
+		offlineIcon = new ImageIcon("Offline.png");
+		onlineIcon = new ImageIcon("Online.png");
+		connectingIcon = new ImageIcon("Connecting.png");	
+		connectedIcon = new ImageIcon("Connected.png");
     }
 
 
@@ -191,10 +204,13 @@ public class MainFrame extends JFrame {
                 //TODO: validate these inputs
                 //TODO: connect to client/server and attempt call
                 //change statusPanel to reflect new statuses
-
-                //TODO: development only. delete this when moving to production
+				
+				setMode(Status.CALLING);
+                
+				//TODO: development only. delete this when moving to production
                 System.out.printf("Address: %s:%d\n", ip, port);
-                client.call(ip, port);
+				
+                client.makeCall(ip, port);
             }
         }
     }
@@ -252,7 +268,18 @@ public class MainFrame extends JFrame {
     public Status getMode(){
         return mode;
     }
-
+	/**
+	* Sets the icon based on the current status
+	**/
+	
+	private void setStatusIcon(ImageIcon statusIcon){
+		imageLabel.setVisible(false);
+		imageLabel = new JLabel(statusIcon);
+		imageLabel.setBounds(333, 70, 400, 400);
+		imageLabel.setVisible(true);
+		add(imageLabel);
+	}
+	
     /**
      * All functionality is disabled until user is connected to their own server instance
      * and is connected to the internet. This is the default state.
@@ -274,6 +301,8 @@ public class MainFrame extends JFrame {
         //user info
         //userIPLabel.setText("My IP: " + ipStub);
         userPortLabel.setText("My Port: " + port);
+		
+		setStatusIcon(offlineIcon);
 
         //TODO: Implement some way of getting to online mode/connected mode. May not happen in this class
     }
@@ -298,6 +327,8 @@ public class MainFrame extends JFrame {
         //user info
         userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
+		
+		setStatusIcon(onlineIcon);
     }
 
     /**
@@ -322,6 +353,8 @@ public class MainFrame extends JFrame {
         //user info
         userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
+		
+		setStatusIcon(connectingIcon);
     }
 
     /**
@@ -348,6 +381,8 @@ public class MainFrame extends JFrame {
         //user info
         userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
+		
+		setStatusIcon(connectingIcon);
     }
 
     /**
@@ -358,7 +393,7 @@ public class MainFrame extends JFrame {
         callButton.setEnabled(false);
 
         //status and info
-        statusLabel.setText("Status: Online");
+        statusLabel.setText("Status: Connected");
         fromIPLabel.setText("To: " + client.getPeerIP());
 
         //buttons and timer
@@ -370,5 +405,7 @@ public class MainFrame extends JFrame {
         //user info
         userIPLabel.setText("My IP: " + client.getSysIP());
         userPortLabel.setText("My Port: " + port);
+		
+		setStatusIcon(connectedIcon);
     }
 }
