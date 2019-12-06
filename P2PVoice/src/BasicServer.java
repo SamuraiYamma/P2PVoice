@@ -65,6 +65,9 @@ public class BasicServer {
         private OutputStream remoteOut;
         private InputStream remoteIn;
 
+        private Thread capThread;
+        private Thread playThread;
+
         //connection info
 
         RemoteHandler(Socket remote, Socket local, int port) throws Exception {
@@ -97,8 +100,28 @@ public class BasicServer {
             }
 
             if(response.equals("YES")) {
-                pb.playAudio();
-                ac.readAudio();
+                try {
+                    sendMessage("YES", remoteOut);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                capThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        ac.readAudio();
+                    }
+                });
+
+                playThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        pb.playAudio();
+                    }
+                });
+                capThread.start();
+                playThread.start();
             }
             else if(response.equals("NO")){
                 //send a message back to their server

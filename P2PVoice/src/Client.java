@@ -96,7 +96,8 @@ public class Client {
     }
 
     /**
-     * deny an incoming connection. send deny response
+     * deny an incoming connection.
+     * sends this response to local server
      * reset system to online
      */
     public void deny(){
@@ -124,6 +125,11 @@ public class Client {
 
     /**
      * call another server with these credentials
+     *
+     * wait for a response.
+     * if yes, then continue with making a call
+     * if no, reset stats
+     *
      * @param peerIP the ip to connect to
      * @param peerPort the port on that ip to connect to
      */
@@ -131,6 +137,8 @@ public class Client {
         //TODO: Add actual call functionality
         Socket remote = null;
         try {
+
+            //THIS CONNECTION IS THE TRIGGER
             remote = new Socket(peerIP, peerPort);
         } catch (IOException e) {
             e.printStackTrace();
@@ -140,6 +148,7 @@ public class Client {
             OutputStream remoteOut = remote.getOutputStream();
             InputStream remoteIn = remote.getInputStream();
 
+            //THIS STRING IS THE RESPONSE FROM THE TRIGGER
             String response = "";
             try {
                 response = getMessage(remoteIn);
@@ -148,6 +157,7 @@ public class Client {
             }
 
             if(response.equals("YES")){
+                mainFrame.setMode(Status.CONNECTED);
                 this.ac = new AudioCapture(remote);
                 this.pb = new AudioPlayback(remote);
 
