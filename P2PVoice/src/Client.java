@@ -90,7 +90,11 @@ public class Client {
             e.printStackTrace();
         }
         mainFrame.setMode(Status.CONNECTED);
+<<<<<<< HEAD
         //call(peerIP, peerPort);
+=======
+        receiveCall(peerIP, peerPort);
+>>>>>>> 504e55487711689b8a3cd861db28019f8222169e
 
 
     }
@@ -102,6 +106,11 @@ public class Client {
     public void deny(){
         //TODO: Remove these lines when in production
         System.out.println("Denying call...");
+        try {
+            sendMessage("NO", clientOut);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         mainFrame.setMode(Status.ONLINE);
         waitForConnect();
     }
@@ -122,6 +131,7 @@ public class Client {
      * @param peerIP the ip to connect to
      * @param peerPort the port on that ip to connect to
      */
+<<<<<<< HEAD
     public void call(String peerIP, int peerPort){
         //TODO: Should we split this method into
         // receiveCall and sendCall? Because the logic
@@ -129,29 +139,58 @@ public class Client {
         // the mode to CALLING inside MainFrame when the call
         // button is hit, but that doesn't seem correct.
         /**
+=======
+    public void makeCall(String peerIP, int peerPort){
+        //TODO: Add actual call functionality
+>>>>>>> 504e55487711689b8a3cd861db28019f8222169e
         Socket remote = null;
         try {
             remote = new Socket(peerIP, peerPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.ac = new AudioCapture(remote);
-        this.pb = new AudioPlayback(remote);
+        //WAIT FOR A RESPONSE FROM REMOTE
+        try {
+            OutputStream remoteOut = remote.getOutputStream();
+            InputStream remoteIn = remote.getInputStream();
 
-        capThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                ac.readAudio();
+            String response = "";
+            try {
+                response = getMessage(remoteIn);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
 
-        playThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run() {
-                pb.playAudio();
+            if(response.equals("YES")){
+                this.ac = new AudioCapture(remote);
+                this.pb = new AudioPlayback(remote);
+
+                capThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        ac.readAudio();
+                    }
+                });
+
+                playThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        pb.playAudio();
+                    }
+                });
+                capThread.start();
+                playThread.start();
             }
+            else if(response.equals("NO")){
+                //TODO: Remove in production
+                System.out.println("Tried to make a call, they denied us");
+
+                mainFrame.setMode(Status.ONLINE);
+                waitForConnect();
+            }
+<<<<<<< HEAD
         });
         capThread.start();
         playThread.start();
@@ -175,7 +214,22 @@ public class Client {
         }
 
 
+=======
+            else {
+                //TODO: Remove in production
+                System.out.println("Not sure what the client response was");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+>>>>>>> 504e55487711689b8a3cd861db28019f8222169e
     }
+
+    public void receiveCall(String peerIP, int peerPort){
+
+    }
+
 
     /**
      * waits for incoming connections
@@ -291,6 +345,7 @@ public class Client {
         in.read(msg, 0, len);
         return new String(msg);
     }
+
 
     /**
      * Sends my info in the output stream

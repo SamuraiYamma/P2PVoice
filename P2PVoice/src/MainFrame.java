@@ -194,7 +194,7 @@ public class MainFrame extends JFrame {
 
                 //TODO: development only. delete this when moving to production
                 System.out.printf("Address: %s:%d\n", ip, port);
-                client.call(ip, port);
+                client.makeCall(ip, port);
             }
         }
     }
@@ -358,7 +358,7 @@ public class MainFrame extends JFrame {
         callButton.setEnabled(false);
 
         //status and info
-        statusLabel.setText("Status: Online");
+        statusLabel.setText("Status: Connected");
         fromIPLabel.setText("To: " + client.getPeerIP());
 
         //buttons and timer
